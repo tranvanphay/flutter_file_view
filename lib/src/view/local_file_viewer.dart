@@ -78,11 +78,7 @@ class _LocalFileViewerState extends State<LocalFileViewer> {
             case ViewType.engine_fail:
               return _buildEngineFailWidget();
             case ViewType.done:
-              if (Platform.isAndroid) {
-                return _createAndroidView();
-              } else {
-                return _createIosView();
-              }
+              return _createIosView();
             case ViewType.none:
               return _buildPlaceholderWidget();
           }
@@ -156,31 +152,10 @@ class _LocalFileViewerState extends State<LocalFileViewer> {
 
   /// Display different layouts by changing status
   Future<ViewType> getViewType() async {
-    if (Platform.isAndroid || Platform.isIOS) {
+    if (Platform.isIOS) {
       if (FileTool.isExistsFile(filePath)) {
         if (FileTool.isSupportOpen(fileType)) {
-          if (Platform.isAndroid) {
-            final X5Status? eX5status = await FlutterFileView.getX5Status();
-            if (eX5status == X5Status.done) {
-              return ViewType.done;
-            } else if (eX5status == X5Status.error) {
-              return ViewType.engine_fail;
-            } else {
-              FlutterFileView.initController.listen((X5Status e) {
-                if (e == X5Status.none ||
-                    e == X5Status.error ||
-                    e == X5Status.download_fail ||
-                    e == X5Status.install_fail) {
-                  FlutterFileView.initX5();
-                } else if (e == X5Status.done) {
-                  setState(() {});
-                }
-              });
-              return ViewType.engine_loading;
-            }
-          } else {
-            return ViewType.done;
-          }
+          return ViewType.done;
         } else {
           return ViewType.unsupported_type;
         }
